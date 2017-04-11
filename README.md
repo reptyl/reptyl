@@ -1,0 +1,2 @@
+[![Build Status](https://travis-ci.org/reptyl/reptyl.svg?branch=master)](https://travis-ci.org/reptyl/reptyl)
+[![Coverage Status](https://coveralls.io/repos/github/reptyl/reptyl/badge.svg?branch=master)](https://coveralls.io/github/reptyl/reptyl?branch=master)
