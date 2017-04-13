@@ -1,9 +1,9 @@
 package io.reptyl;
 
-import io.reptyl.error.ExceptionHandlerFactory;
-import io.reptyl.route.RoutingHandlerFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import io.reptyl.error.GlobalExceptionHandler;
+import io.reptyl.route.RoutingHandlerFactory;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.RoutingHandler;
@@ -43,20 +43,17 @@ public class ReptylModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public ExceptionHandler exceptionHandler(
-            final ServerConfiguration serverConfiguration,
-            final ExceptionHandlerFactory exceptionHandlerFactory,
-            final RoutingHandler routingHandler) {
+    public ExceptionHandler exceptionHandler(final RoutingHandler routingHandler) {
 
-        return exceptionHandlerFactory.getFromPackage(serverConfiguration.getScanPackage());
+        return new ExceptionHandler(routingHandler);
     }
 
     @Provides
     @Singleton
     @Named(ROOT_HANDLER)
-    public HttpHandler httpHandler(final ExceptionHandler exceptionHandler) {
+    public HttpHandler httpHandler(final GlobalExceptionHandler globalExceptionHandler) {
 
-        return new BlockingHandler(exceptionHandler);
+        return new BlockingHandler(globalExceptionHandler);
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
+import static io.undertow.util.StatusCodes.INSUFFICIENT_STORAGE;
 import static org.apache.http.HttpStatus.SC_ACCEPTED;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
@@ -154,5 +155,32 @@ public class ReptylServerIT {
 
         reptylServer1.stop();
         reptylServer2.stop();
+    }
+
+    @Test
+    public void annotatedExceptionsShouldBeApplied() {
+
+        ReptylServer reptylServer1 = ReptylServer
+                .builder()
+                .port(8080)
+                .scanPackage("io.reptyl.test.integration.package3")
+                .build();
+
+        reptylServer1.start();
+
+        // @formatter:off
+
+        given()
+            .port(8080)
+        .when()
+            .get("/test")
+        .then()
+            .assertThat()
+                .statusCode(INSUFFICIENT_STORAGE);
+
+        // @formatter:on
+
+        reptylServer1.stop();
+
     }
 }
