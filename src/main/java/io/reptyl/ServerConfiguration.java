@@ -1,6 +1,10 @@
 package io.reptyl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.inject.Singleton;
+
+import static java.util.Collections.unmodifiableCollection;
 
 @Singleton
 public class ServerConfiguration {
@@ -12,6 +16,8 @@ public class ServerConfiguration {
     private String workerName;
 
     private String scanPackage;
+
+    private Collection<Class<?>> controllers = new ArrayList<>();
 
     public Integer getPort() {
         return port;
@@ -43,5 +49,13 @@ public class ServerConfiguration {
 
     public void setScanPackage(String scanPackage) {
         this.scanPackage = scanPackage;
+    }
+
+    public void addController(Class<?> clazz) {
+        controllers.add(clazz);
+    }
+
+    public Collection<Class<?>> getControllers() {
+        return unmodifiableCollection(controllers);
     }
 }

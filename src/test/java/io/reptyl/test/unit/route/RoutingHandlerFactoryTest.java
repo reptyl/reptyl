@@ -2,13 +2,17 @@ package io.reptyl.test.unit.route;
 
 import io.reptyl.route.RoutingHandlerFactory;
 import io.reptyl.route.RouteFactory;
+import io.reptyl.route.exception.EmptyControllerException;
+import io.reptyl.route.exception.NonSingletonControllerException;
 import io.undertow.server.RoutingHandler;
+import javax.inject.Singleton;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static com.googlecode.catchexception.CatchException.verifyException;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,16 +27,18 @@ public class RoutingHandlerFactoryTest {
     @Mock
     private RouteFactory routeFactory;
 
+    RoutingHandlerFactory routingHandlerFactory;
+
     @Before
     public void setUp() throws Exception {
 
         when(routeFactory.getRoutingHandler(any(), any())).thenReturn(new RoutingHandler());
+
+        routingHandlerFactory = new RoutingHandlerFactory(routeFactory);
     }
 
     @Test
-    public void nonSingletonClassesShouldBeIgnored() {
-
-        RoutingHandlerFactory routingHandlerFactory = new RoutingHandlerFactory(routeFactory);
+    public void nonSingletonClassesShouldBeIgnoredWhenScanning() {
 
         RoutingHandler routingHandler = routingHandlerFactory.getFromPackage("io.reptyl.test.unit.route.package1");
 
@@ -43,8 +49,6 @@ public class RoutingHandlerFactoryTest {
     @Test
     public void nonAnnotatedMethodsShouldBeIgnored() {
 
-        RoutingHandlerFactory routingHandlerFactory = new RoutingHandlerFactory(routeFactory);
-
         RoutingHandler routingHandler = routingHandlerFactory.getFromPackage("io.reptyl.test.unit.route.package2");
 
         assertThat("a RoutingHandler should be returned", routingHandler, notNullValue());
@@ -53,8 +57,6 @@ public class RoutingHandlerFactoryTest {
 
     @Test
     public void basePathShouldBePassedToTheRouteFactory() {
-
-        RoutingHandlerFactory routingHandlerFactory = new RoutingHandlerFactory(routeFactory);
 
         RoutingHandler routingHandler = routingHandlerFactory.getFromPackage("io.reptyl.test.unit.route.package3");
 
@@ -65,11 +67,26 @@ public class RoutingHandlerFactoryTest {
     @Test
     public void emptyBasePathShouldBeNormalized() {
 
-        RoutingHandlerFactory routingHandlerFactory = new RoutingHandlerFactory(routeFactory);
-
         RoutingHandler routingHandler = routingHandlerFactory.getFromPackage("io.reptyl.test.unit.route.package4");
 
         assertThat("a RoutingHandler should be returned", routingHandler, notNullValue());
         verify(routeFactory, times(1)).getRoutingHandler(any(), eq("/"));
+    }
+
+    @Test
+    public void nonSingletonClassesShouldBeRejected() {
+
+        verifyException(routingHandlerFactory, NonSingletonControllerException.class).fromClass(RoutingHandlerFactoryTest.class);
+    }
+
+    @Test
+    public void emptyControllerClassesShouldBeIgnored() {
+
+        verifyException(routingHandlerFactory, EmptyControllerException.class).fromClass(Controller.class);
+    }
+
+    @Singleton
+    private static class Controller {
+
     }
 }

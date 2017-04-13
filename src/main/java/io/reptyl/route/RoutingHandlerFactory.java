@@ -1,10 +1,13 @@
 package io.reptyl.route;
 
+import io.reptyl.route.exception.EmptyControllerException;
+import io.reptyl.route.exception.NonSingletonControllerException;
 import io.undertow.server.RoutingHandler;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -16,6 +19,8 @@ import javax.ws.rs.Path;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.toList;
 
 @Singleton
 public class RoutingHandlerFactory {
@@ -42,33 +47,50 @@ public class RoutingHandlerFactory {
                 // keep only classes having method annotate with JAX-RS annotations
                 .filter(singleton -> methodsOf(singleton).anyMatch(IS_HTTP_METHOD_ANNOTATED))
 
-                .peek(singleton -> {
+                .forEach(singleton -> routingHandler.addAll(fromClass(singleton)));
 
-                    LOGGER.debug("found class {}", singleton);
+        return routingHandler;
+    }
 
-                    // determine the base path of the controllers defined in the current class
-                    String basePath = Optional.ofNullable(singleton.getAnnotation(Path.class))
-                            .map(Path::value)
-                            .orElse("/");
+    public RoutingHandler fromClass(Class<?> clazz) {
 
-                    basePaths.put(singleton, basePath);
+        Singleton singletonAnnotation = clazz.getDeclaredAnnotation(Singleton.class);
 
-                })
+        if (singletonAnnotation == null) {
+            throw new NonSingletonControllerException(clazz);
+        }
 
-                .flatMap(singleton -> methodsOf(singleton).filter(IS_HTTP_METHOD_ANNOTATED))
+        List<Method> methods = methodsOfAsList(clazz);
 
-                .forEach(method -> {
+        if (methods.isEmpty()) {
+            throw new EmptyControllerException(clazz);
+        }
 
-                    LOGGER.debug("found method {}", method);
+        RoutingHandler routingHandler = new RoutingHandler();
 
-                    routingHandler.addAll(routeFactory.getRoutingHandler(method, basePaths.get(method.getDeclaringClass())));
-                });
+        // determine the base path of the controllers defined in the current class
+        String basePath = Optional.ofNullable(clazz.getAnnotation(Path.class))
+                .map(Path::value)
+                .orElse("/");
+
+        methods.forEach(method -> {
+
+            LOGGER.debug("found method {}", method);
+
+            routingHandler.addAll(routeFactory.getRoutingHandler(method, basePath));
+        });
 
         return routingHandler;
     }
 
     private static Stream<Method> methodsOf(Class<?> clazz) {
         return Arrays.stream(clazz.getDeclaredMethods());
+    }
+
+    private static List<Method> methodsOfAsList(Class<?> clazz) {
+        return Stream.of(clazz.getDeclaredMethods())
+                .filter(IS_HTTP_METHOD_ANNOTATED)
+                .collect(toList());
     }
 
     private static final Predicate<Method> IS_HTTP_METHOD_ANNOTATED = method -> {

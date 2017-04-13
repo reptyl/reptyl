@@ -38,7 +38,21 @@ public class ReptylModule extends AbstractModule {
             final ServerConfiguration serverConfiguration,
             final RoutingHandlerFactory routingHandlerFactory) {
 
-        return routingHandlerFactory.getFromPackage(serverConfiguration.getScanPackage());
+        RoutingHandler routingHandler;
+
+        if (serverConfiguration.getScanPackage() != null) {
+            routingHandler = routingHandlerFactory.getFromPackage(serverConfiguration.getScanPackage());
+        } else {
+            routingHandler = new RoutingHandler();
+        }
+
+        serverConfiguration
+                .getControllers()
+                .stream()
+                .map(routingHandlerFactory::fromClass)
+                .forEach(routingHandler::addAll);
+
+        return routingHandler;
     }
 
     @Provides

@@ -66,6 +66,28 @@ public class ReptylServer {
             return this;
         }
 
+        public Builder scanCurrentPackage() {
+
+            try {
+                serverConfiguration.setScanPackage(
+                        Class.forName(
+                                Thread.currentThread()
+                                        .getStackTrace()[2]
+                                        .getClassName())
+                                .getPackage()
+                                .getName());
+            } catch (ClassNotFoundException e) {
+                throw new Error("this should never happen");
+            }
+
+            return this;
+        }
+
+        public Builder withController(Class<?> clazz) {
+            this.serverConfiguration.addController(clazz);
+            return this;
+        }
+
         public ReptylServer build() {
 
             LOGGER.debug("creating reptyl server");
@@ -80,22 +102,6 @@ public class ReptylServer {
 
             if (serverConfiguration.getWorkerName() == null) {
                 serverConfiguration.setWorkerName(DEFAULT_WORKER_NAME);
-            }
-
-            // if not scan package has been configured, default to the package of the caller
-            if (serverConfiguration.getScanPackage() == null) {
-
-                try {
-                    serverConfiguration.setScanPackage(
-                            Class.forName(
-                                    Thread.currentThread()
-                                            .getStackTrace()[2]
-                                            .getClassName())
-                                    .getPackage()
-                                    .getName());
-                } catch (ClassNotFoundException e) {
-                    throw new Error("this should never happen");
-                }
             }
 
             return injector.getInstance(ReptylServer.class);

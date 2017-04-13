@@ -60,18 +60,6 @@ public class ReptylServerBuilderTest {
     }
 
     @Test
-    public void scanCurrentPackageByDefault() throws Exception {
-
-        ReptylServer.Builder builder = ReptylServer.builder();
-        builder.build();
-
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
-
-        assertThat("the current package should be used if no explicit configuration given", serverConfiguration.getScanPackage(), equalTo("io.reptyl.test.unit.server"));
-    }
-
-    @Test
     public void applyTheConfiguredServerPort() throws Exception {
 
         ReptylServer.Builder builder = ReptylServer
