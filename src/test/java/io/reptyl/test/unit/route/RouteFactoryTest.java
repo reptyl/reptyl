@@ -158,7 +158,6 @@ public class RouteFactoryTest {
     @Test
     public void emptyControllerPathShouldBeRejected() {
 
-        when(method.getAnnotations()).thenReturn(new Annotation[] { getAnnotation });
         when(method.getAnnotation(Path.class)).thenReturn(pathAnnotation);
 
         when(pathAnnotation.value()).thenReturn("");
@@ -168,8 +167,6 @@ public class RouteFactoryTest {
 
     @Test
     public void emptyBasePathShouldBeRejected() {
-
-        when(method.getAnnotations()).thenReturn(new Annotation[] { getAnnotation });
 
         verifyException(routeFactory, EmptyBasePathException.class).getRoutingHandler(method, "");
     }
@@ -247,7 +244,6 @@ public class RouteFactoryTest {
     @Test
     public void malformedControllerPathShouldBeRejected() {
 
-        when(method.getAnnotations()).thenReturn(new Annotation[] { getAnnotation });
         when(method.getAnnotation(Path.class)).thenReturn(pathAnnotation);
 
         when(pathAnnotation.value()).thenReturn("test");   // ht apath does not start with a slash
