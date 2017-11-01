@@ -10,9 +10,6 @@ import static io.undertow.util.StatusCodes.INTERNAL_SERVER_ERROR;
 @Singleton
 public class DefaultExceptionHandler implements HttpHandler {
 
-    public DefaultExceptionHandler() {
-    }
-
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
 

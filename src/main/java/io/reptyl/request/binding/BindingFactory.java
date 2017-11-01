@@ -29,17 +29,26 @@ public class BindingFactory {
 
     private static final String JAX_RS_PACKAGE = "javax.ws.rs";
 
-    private static final Set<Class<?>> SUPPORTED_ANNOTATIONS = unmodifiableSet(new HashSet<Class<?>>() {{
-        add(QueryParam.class);
-        add(PathParam.class);
-        add(HeaderParam.class);
-    }});
+    private static final Set<Class<?>> SUPPORTED_ANNOTATIONS;
 
-    private static final Set<Class<?>> UNSUPPORTED_ANNOTATIONS = unmodifiableSet(new HashSet<Class<?>>() {{
-        add(MatrixParam.class);
-        add(FormParam.class);
-        add(CookieParam.class);
-    }});
+    private static final Set<Class<?>> UNSUPPORTED_ANNOTATIONS;
+
+    static {
+
+        Set<Class<?>> supportedAnnotations = new HashSet<>();
+        supportedAnnotations.add(QueryParam.class);
+        supportedAnnotations.add(PathParam.class);
+        supportedAnnotations.add(HeaderParam.class);
+
+        SUPPORTED_ANNOTATIONS = unmodifiableSet(supportedAnnotations);
+
+        Set<Class<?>> unsupportedAnnotations = new HashSet<>();
+        unsupportedAnnotations.add(MatrixParam.class);
+        unsupportedAnnotations.add(FormParam.class);
+        unsupportedAnnotations.add(CookieParam.class);
+
+        UNSUPPORTED_ANNOTATIONS = unmodifiableSet(unsupportedAnnotations);
+    }
 
     public Binding<?> getParameterBinding(Parameter parameter) {
 

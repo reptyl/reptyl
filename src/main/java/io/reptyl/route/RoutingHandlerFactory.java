@@ -6,9 +6,7 @@ import io.undertow.server.RoutingHandler;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -37,8 +35,6 @@ public class RoutingHandlerFactory {
     public RoutingHandler getFromPackage(String packageName) {
 
         RoutingHandler routingHandler = new RoutingHandler();
-
-        Map<Class<?>, String> basePaths = new HashMap<>();
 
         new Reflections(packageName)
                 .getTypesAnnotatedWith(Singleton.class)

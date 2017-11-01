@@ -34,9 +34,9 @@ public class ReptylServer {
 
     public static class Builder {
 
-        public static Integer DEFAULT_PORT = 8080;
-        public static String DEFAULT_HOST = "localhost";
-        public static String DEFAULT_WORKER_NAME = "Reptyl";
+        public static final Integer DEFAULT_PORT = 8080;
+        public static final String DEFAULT_HOST = "localhost";
+        public static final String DEFAULT_WORKER_NAME = "Reptyl";
 
         private final Injector injector;
         private final ServerConfiguration serverConfiguration;
@@ -77,7 +77,7 @@ public class ReptylServer {
                                 .getPackage()
                                 .getName());
             } catch (ClassNotFoundException e) {
-                throw new Error("this should never happen");
+                throw new AssertionError("a class already in stack cannot be missed by Class.forName()");
             }
 
             return this;

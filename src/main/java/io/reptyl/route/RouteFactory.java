@@ -41,7 +41,7 @@ public class RouteFactory {
         this.methodInvokerHandlerFactory = methodInvokerHandlerFactory;
     }
 
-    public RoutingHandler getRoutingHandler(Method method, @Nullable String basePath) {
+    public RoutingHandler getRoutingHandler(Method method, final @Nullable String basePath) {
 
         requireNonNull(method, "method should not be null");
 
@@ -54,11 +54,13 @@ public class RouteFactory {
         }
 
         // normalize the base path
-        if (basePath == null) {
-            basePath = "/";
+        String normalizedBasePath = basePath;
+
+        if (normalizedBasePath == null) {
+            normalizedBasePath = "/";
         }
 
-        if (basePath.isEmpty()) {
+        if (normalizedBasePath.isEmpty()) {
             throw new EmptyBasePathException(method);
         }
 
@@ -96,8 +98,8 @@ public class RouteFactory {
 
         // determine the path of the current controller
 
-        if (!basePath.equals("/") || !controllerPath.isPresent()) {
-            pathBuilder.append(basePath);
+        if (!normalizedBasePath.equals("/") || !controllerPath.isPresent()) {
+            pathBuilder.append(normalizedBasePath);
         }
 
         controllerPath.ifPresent(pathBuilder::append);

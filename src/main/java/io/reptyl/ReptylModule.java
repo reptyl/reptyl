@@ -11,10 +11,14 @@ import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.ExceptionHandler;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.xnio.Options.WORKER_NAME;
 
 public class ReptylModule extends AbstractModule {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReptylModule.class);
 
     private static final String ROOT_HANDLER = "ROOT_HANDLER";
 
@@ -73,5 +77,6 @@ public class ReptylModule extends AbstractModule {
     @Override
     protected void configure() {
 
+        LOGGER.debug("Reptyl configuration completed");
     }
 }

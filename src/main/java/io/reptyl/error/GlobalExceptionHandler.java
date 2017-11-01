@@ -27,8 +27,8 @@ public class GlobalExceptionHandler implements HttpHandler {
 
         try {
             exceptionHandler.handleRequest(exchange);
-        } catch (Throwable throwable) {
-            exchange.putAttachment(THROWABLE, throwable);
+        } catch (Exception e) {
+            exchange.putAttachment(THROWABLE, e);
             defaultExceptionHandler.handleRequest(exchange);
         }
     }
