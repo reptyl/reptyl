@@ -39,7 +39,7 @@ public class MethodInvokerHandler implements HttpHandler {
         }
 
         try {
-            invoke(exchange);
+            method.invoke(controller, bindings.stream().map(o -> o.bindTo(exchange).get()).toArray(Object[]::new));
         } catch (InvocationTargetException e) {
 
             Throwable cause = e.getCause();
@@ -50,9 +50,5 @@ public class MethodInvokerHandler implements HttpHandler {
                 throw new MethodInvocationException(cause);
             }
         }
-    }
-
-    private void invoke(HttpServerExchange exchange) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(controller, bindings.stream().map(o -> o.bindTo(exchange).get()).toArray(Object[]::new));
     }
 }
