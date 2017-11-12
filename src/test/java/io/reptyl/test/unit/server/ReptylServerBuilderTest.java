@@ -92,18 +92,4 @@ public class ReptylServerBuilderTest {
 
         assertThat("the given host should be used", server.getServerConfiguration().getWorkerName(), equalTo("TEST-WORKER"));
     }
-
-    @Test
-    public void scanTheGivenPackage() throws Exception {
-
-        ReptylServer.Builder builder = ReptylServer
-                .builder()
-                .scanPackage("scan.this.package");
-
-        builder.build();
-
-        ReptylServer server = builder.build();
-
-        assertThat("the given host should be used", server.getServerConfiguration().getScanPackage(), equalTo("scan.this.package"));
-    }
 }

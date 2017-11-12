@@ -15,8 +15,6 @@ public class ServerConfiguration {
 
     private String workerName;
 
-    private String scanPackage;
-
     private Collection<Class<?>> controllers = new ArrayList<>();
 
     public Integer getPort() {
@@ -41,14 +39,6 @@ public class ServerConfiguration {
 
     public void setWorkerName(String workerName) {
         this.workerName = workerName;
-    }
-
-    public String getScanPackage() {
-        return scanPackage;
-    }
-
-    public void setScanPackage(String scanPackage) {
-        this.scanPackage = scanPackage;
     }
 
     public void addController(Class<?> clazz) {

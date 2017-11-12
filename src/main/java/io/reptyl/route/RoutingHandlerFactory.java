@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,22 +29,6 @@ public class RoutingHandlerFactory {
     @Inject
     public RoutingHandlerFactory(final RouteFactory routeFactory) {
         this.routeFactory = routeFactory;
-    }
-
-    public RoutingHandler getFromPackage(String packageName) {
-
-        RoutingHandler routingHandler = new RoutingHandler();
-
-        new Reflections(packageName)
-                .getTypesAnnotatedWith(Singleton.class)
-                .stream()
-
-                // keep only classes having method annotate with JAX-RS annotations
-                .filter(singleton -> methodsOf(singleton).anyMatch(IS_HTTP_METHOD_ANNOTATED))
-
-                .forEach(singleton -> routingHandler.addAll(fromClass(singleton)));
-
-        return routingHandler;
     }
 
     public RoutingHandler fromClass(Class<?> clazz) {

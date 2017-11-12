@@ -69,28 +69,6 @@ public class ReptylServer {
             return this;
         }
 
-        public Builder scanPackage(String packageName) {
-            this.serverConfiguration.setScanPackage(packageName);
-            return this;
-        }
-
-        public Builder scanCurrentPackage() {
-
-            try {
-                serverConfiguration.setScanPackage(
-                        Class.forName(
-                                Thread.currentThread()
-                                        .getStackTrace()[2]
-                                        .getClassName())
-                                .getPackage()
-                                .getName());
-            } catch (ClassNotFoundException e) {
-                throw new AssertionError("a class already in stack cannot be missed by Class.forName()");
-            }
-
-            return this;
-        }
-
         public Builder withController(Class<?> clazz) {
             this.serverConfiguration.addController(clazz);
             return this;
@@ -119,7 +97,6 @@ public class ReptylServer {
             serverConfiguration.setHost(this.serverConfiguration.getHost());
             serverConfiguration.setPort(this.serverConfiguration.getPort());
             serverConfiguration.setWorkerName(this.serverConfiguration.getWorkerName());
-            serverConfiguration.setScanPackage(this.serverConfiguration.getScanPackage());
             serverConfiguration.addControllers(this.serverConfiguration.getControllers());
 
             return injector.getInstance(ReptylServer.class);
