@@ -10,6 +10,8 @@ import java.util.Collection;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnio.Xnio;
+import org.xnio.XnioWorker;
 
 public class ReptylServer {
 
@@ -30,11 +32,17 @@ public class ReptylServer {
     public void start() {
         LOGGER.info("starting reptyl server");
         undertow.start();
+
+        XnioWorker worker = undertow.getWorker();
+        Xnio xnio = undertow.getXnio();
     }
 
     public void stop() {
         LOGGER.info("stopping reptyl server");
         undertow.stop();
+
+        XnioWorker worker = undertow.getWorker();
+        Xnio xnio = undertow.getXnio();
     }
 
     public ServerConfiguration getServerConfiguration() {

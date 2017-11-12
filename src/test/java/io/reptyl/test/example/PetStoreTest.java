@@ -17,7 +17,7 @@ public class PetStoreTest {
     private static PetStore petStore;
 
     @BeforeClass
-    public static void setUp() throws InterruptedException {
+    public static void setUp() {
 
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.port = 8081;
@@ -25,16 +25,12 @@ public class PetStoreTest {
 
         petStore = new PetStore();
         petStore.start();
-
-        Thread.sleep(1000);
     }
 
     @AfterClass
-    public static void tearDown() throws InterruptedException {
+    public static void tearDown() {
 
         petStore.stop();
-
-        Thread.sleep(1000);
     }
 
     @Test
