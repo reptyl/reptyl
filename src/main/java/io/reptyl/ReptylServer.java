@@ -2,7 +2,11 @@ package io.reptyl;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 import io.undertow.Undertow;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +17,14 @@ public class ReptylServer {
 
     private final Undertow undertow;
 
+    private final ServerConfiguration serverConfiguration;
+
     @Inject
-    private ReptylServer(final Undertow undertow) {
+    private ReptylServer(
+            final Undertow undertow,
+            final ServerConfiguration serverConfiguration) {
         this.undertow = undertow;
+        this.serverConfiguration = serverConfiguration;
     }
 
     public void start() {
@@ -28,8 +37,12 @@ public class ReptylServer {
         undertow.stop();
     }
 
+    public ServerConfiguration getServerConfiguration() {
+        return serverConfiguration;
+    }
+
     public static ReptylServer.Builder builder() {
-        return new ReptylServer.Builder(Guice.createInjector(new ReptylModule()));
+        return new ReptylServer.Builder();
     }
 
     public static class Builder {
@@ -38,13 +51,8 @@ public class ReptylServer {
         public static final String DEFAULT_HOST = "localhost";
         public static final String DEFAULT_WORKER_NAME = "Reptyl";
 
-        private final Injector injector;
-        private final ServerConfiguration serverConfiguration;
-
-        public Builder(Injector injector) {
-            this.injector = injector;
-            this.serverConfiguration = injector.getInstance(ServerConfiguration.class);
-        }
+        private final Collection<Module> modules = new ArrayList<>();
+        private final ServerConfiguration serverConfiguration = new ServerConfiguration();
 
         public Builder port(Integer port) {
             this.serverConfiguration.setPort(port);
@@ -104,7 +112,22 @@ public class ReptylServer {
                 serverConfiguration.setWorkerName(DEFAULT_WORKER_NAME);
             }
 
+
+            Injector injector = Guice.createInjector(Modules.override(new ReptylModule()).with(modules));
+
+            ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
+            serverConfiguration.setHost(this.serverConfiguration.getHost());
+            serverConfiguration.setPort(this.serverConfiguration.getPort());
+            serverConfiguration.setWorkerName(this.serverConfiguration.getWorkerName());
+            serverConfiguration.setScanPackage(this.serverConfiguration.getScanPackage());
+            serverConfiguration.addControllers(this.serverConfiguration.getControllers());
+
             return injector.getInstance(ReptylServer.class);
+        }
+
+        public Builder withModule(Module module) {
+            modules.add(module);
+            return this;
         }
     }
 }

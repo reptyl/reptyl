@@ -39,7 +39,10 @@ public class MethodInvokerHandler implements HttpHandler {
         }
 
         try {
-            method.invoke(controller, bindings.stream().map(o -> o.bindTo(exchange).get()).toArray(Object[]::new));
+            Object[] args = bindings.stream()
+                    .map(o -> o.bindTo(exchange).get())
+                    .toArray(Object[]::new);
+            method.invoke(controller, args);
         } catch (InvocationTargetException e) {
 
             Throwable cause = e.getCause();

@@ -1,10 +1,12 @@
 package io.reptyl.test.integration;
 
 import io.reptyl.ReptylServer;
+import io.restassured.RestAssured;
 import io.undertow.server.HttpServerExchange;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
@@ -14,6 +16,14 @@ import static org.apache.http.HttpStatus.SC_ACCEPTED;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class ReptylServerIT {
+
+    @BeforeClass
+    public static void setUp() {
+
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssured.port = 8080;
+        RestAssured.baseURI = "http://localhost";
+    }
 
     @Test
     public void applicationShouldRespondOnDefaultPortWithoutConfiguration() {

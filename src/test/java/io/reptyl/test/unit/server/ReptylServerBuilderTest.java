@@ -1,8 +1,6 @@
 package io.reptyl.test.unit.server;
 
 import io.reptyl.ReptylServer;
-import io.reptyl.ServerConfiguration;
-import com.google.inject.Injector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -10,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static io.reptyl.ReptylServer.Builder.DEFAULT_HOST;
 import static io.reptyl.ReptylServer.Builder.DEFAULT_PORT;
 import static io.reptyl.ReptylServer.Builder.DEFAULT_WORKER_NAME;
-import static io.reptyl.test.unit.ReflectionTestUtils.getField;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -29,10 +26,9 @@ public class ReptylServerBuilderTest {
         ReptylServer.Builder builder = ReptylServer.builder();
         builder.build();
 
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
+        ReptylServer server = builder.build();
 
-        assertThat("the default port should be used if no explicit configuration given", serverConfiguration.getPort(), equalTo(DEFAULT_PORT));
+        assertThat("the default port should be used if no explicit configuration given", server.getServerConfiguration().getPort(), equalTo(DEFAULT_PORT));
     }
 
     @Test
@@ -41,10 +37,9 @@ public class ReptylServerBuilderTest {
         ReptylServer.Builder builder = ReptylServer.builder();
         builder.build();
 
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
+        ReptylServer server = builder.build();
 
-        assertThat("the default host should be used if no explicit configuration given", serverConfiguration.getHost(), equalTo(DEFAULT_HOST));
+        assertThat("the default host should be used if no explicit configuration given", server.getServerConfiguration().getHost(), equalTo(DEFAULT_HOST));
     }
 
     @Test
@@ -53,10 +48,9 @@ public class ReptylServerBuilderTest {
         ReptylServer.Builder builder = ReptylServer.builder();
         builder.build();
 
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
+        ReptylServer server = builder.build();
 
-        assertThat("the default worker name should be used if no explicit configuration given", serverConfiguration.getWorkerName(), equalTo(DEFAULT_WORKER_NAME));
+        assertThat("the default worker name should be used if no explicit configuration given", server.getServerConfiguration().getWorkerName(), equalTo(DEFAULT_WORKER_NAME));
     }
 
     @Test
@@ -68,10 +62,9 @@ public class ReptylServerBuilderTest {
 
         builder.build();
 
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
+        ReptylServer server = builder.build();
 
-        assertThat("the given port should be used", serverConfiguration.getPort(), equalTo(1234));
+        assertThat("the given port should be used", server.getServerConfiguration().getPort(), equalTo(1234));
     }
 
     @Test
@@ -81,12 +74,9 @@ public class ReptylServerBuilderTest {
                 .builder()
                 .host("example.org");
 
-        builder.build();
+        ReptylServer server = builder.build();
 
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
-
-        assertThat("the given host should be used", serverConfiguration.getHost(), equalTo("example.org"));
+        assertThat("the given host should be used", server.getServerConfiguration().getHost(), equalTo("example.org"));
     }
 
     @Test
@@ -98,10 +88,9 @@ public class ReptylServerBuilderTest {
 
         builder.build();
 
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
+        ReptylServer server = builder.build();
 
-        assertThat("the given host should be used", serverConfiguration.getWorkerName(), equalTo("TEST-WORKER"));
+        assertThat("the given host should be used", server.getServerConfiguration().getWorkerName(), equalTo("TEST-WORKER"));
     }
 
     @Test
@@ -113,9 +102,8 @@ public class ReptylServerBuilderTest {
 
         builder.build();
 
-        Injector injector = getField(builder, "injector");
-        ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
+        ReptylServer server = builder.build();
 
-        assertThat("the given host should be used", serverConfiguration.getScanPackage(), equalTo("scan.this.package"));
+        assertThat("the given host should be used", server.getServerConfiguration().getScanPackage(), equalTo("scan.this.package"));
     }
 }

@@ -10,7 +10,6 @@ import io.reptyl.request.binding.exception.UnsupportedBindingAnnotationException
 import io.undertow.server.HttpServerExchange;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
-import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Singleton;
 import javax.ws.rs.CookieParam;
@@ -22,33 +21,23 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import static java.util.Arrays.stream;
-import static java.util.Collections.unmodifiableSet;
 
 @Singleton
 public class BindingFactory {
 
     private static final String JAX_RS_PACKAGE = "javax.ws.rs";
 
-    private static final Set<Class<?>> SUPPORTED_ANNOTATIONS;
+    private static final Set<Class<?>> SUPPORTED_ANNOTATIONS = Set.of(
+            QueryParam.class,
+            PathParam.class,
+            HeaderParam.class
+    );
 
-    private static final Set<Class<?>> UNSUPPORTED_ANNOTATIONS;
-
-    static {
-
-        Set<Class<?>> supportedAnnotations = new HashSet<>();
-        supportedAnnotations.add(QueryParam.class);
-        supportedAnnotations.add(PathParam.class);
-        supportedAnnotations.add(HeaderParam.class);
-
-        SUPPORTED_ANNOTATIONS = unmodifiableSet(supportedAnnotations);
-
-        Set<Class<?>> unsupportedAnnotations = new HashSet<>();
-        unsupportedAnnotations.add(MatrixParam.class);
-        unsupportedAnnotations.add(FormParam.class);
-        unsupportedAnnotations.add(CookieParam.class);
-
-        UNSUPPORTED_ANNOTATIONS = unmodifiableSet(unsupportedAnnotations);
-    }
+    private static final Set<Class<?>> UNSUPPORTED_ANNOTATIONS = Set.of(
+            MatrixParam.class,
+            FormParam.class,
+            CookieParam.class
+    );
 
     public Binding<?> getParameterBinding(Parameter parameter) {
 
@@ -126,7 +115,7 @@ public class BindingFactory {
                     throw new EmptyPathParamAnnotationException();
                 }
 
-                return new PathParamBinding(value, defaultValue);
+                return new PathParamBinding(value, defaultValue, parameter.getType());
             }
 
             if (annotation instanceof HeaderParam) {

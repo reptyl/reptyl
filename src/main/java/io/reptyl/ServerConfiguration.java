@@ -55,6 +55,10 @@ public class ServerConfiguration {
         controllers.add(clazz);
     }
 
+    public void addControllers(Collection<Class<?>> clazz) {
+        controllers.addAll(clazz);
+    }
+
     public Collection<Class<?>> getControllers() {
         return unmodifiableCollection(controllers);
     }

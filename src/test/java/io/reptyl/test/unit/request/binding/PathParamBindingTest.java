@@ -1,14 +1,13 @@
 package io.reptyl.test.unit.request.binding;
 
-import io.reptyl.request.binding.BindingFactory;
 import io.reptyl.request.binding.Binding;
+import io.reptyl.request.binding.BindingFactory;
 import io.reptyl.request.binding.PathParamBinding;
 import io.reptyl.request.binding.exception.EmptyPathParamAnnotationException;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.PathTemplateMatch;
 import java.lang.reflect.Parameter;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.PathParam;
 import org.junit.Test;
@@ -16,12 +15,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static io.reptyl.test.unit.ReflectionTestUtils.getParameter;
 import static com.googlecode.catchexception.CatchException.verifyException;
+import static io.reptyl.test.unit.ReflectionTestUtils.getParameter;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,13 +36,7 @@ public class PathParamBindingTest {
 
         Parameter parameter = getParameter(Controller.class, "method1", String.class);
 
-        Deque<String> parameterValues = new ArrayDeque<>();
-        parameterValues.add("TEST-VALUE");
-
-        HashMap<String, Deque<String>> parameters = new HashMap<>();
-        parameters.put("param", parameterValues);
-
-        when(exchange.getPathParameters()).thenReturn(parameters);
+        when(exchange.getAttachment(eq(PathTemplateMatch.ATTACHMENT_KEY))).thenReturn(new PathTemplateMatch("/test", Map.of("param", "TEST-VALUE")));
 
         Binding<?> binding = new BindingFactory().getParameterBinding(parameter);
 
@@ -63,9 +58,8 @@ public class PathParamBindingTest {
 
         Parameter parameter = getParameter(Controller.class, "method3", String.class);
 
-        when(exchange.getPathParameters()).thenReturn(new HashMap<>());
-
         PathParamBinding binding = (PathParamBinding) new BindingFactory().getParameterBinding(parameter);
+        when(exchange.getAttachment(eq(PathTemplateMatch.ATTACHMENT_KEY))).thenReturn(new PathTemplateMatch("/test", emptyMap()));
 
         assertThat("a binding should be created", parameter, notNullValue());
         assertThat("binding should be a PathParamBinding", binding, instanceOf(PathParamBinding.class));
