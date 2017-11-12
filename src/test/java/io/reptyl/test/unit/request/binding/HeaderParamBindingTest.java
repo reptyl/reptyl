@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static io.reptyl.test.unit.ReflectionTestUtils.getParameter;
-import static com.googlecode.catchexception.CatchException.verifyException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
@@ -46,12 +45,12 @@ public class HeaderParamBindingTest {
         assertThat("the bound parameter should return the given value", binding.bindTo(exchange).get(), equalTo("TEST-VALUE"));
     }
 
-    @Test
+    @Test(expected = EmptyHeaderParamAnnotationException.class)
     public void disallowEmptyAnnotation() {
 
         Parameter parameter = getParameter(Controller.class, "method2", String.class);
 
-        verifyException(new BindingFactory(), EmptyHeaderParamAnnotationException.class).getParameterBinding(parameter);
+        new BindingFactory().getParameterBinding(parameter);
     }
 
     @Test

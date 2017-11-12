@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static io.reptyl.test.unit.ReflectionTestUtils.getParameter;
-import static com.googlecode.catchexception.CatchException.verifyException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
@@ -26,12 +25,12 @@ public class ExchangeBindingTest {
     @Mock
     private HttpServerExchange exchange;
 
-    @Test
+    @Test(expected = InvalidExchangeAnnotationException.class)
     public void exchangeParameterMustNotBeAnnotated() throws NoSuchMethodException {
 
         Parameter parameter = getParameter(Controller.class, "method1", HttpServerExchange.class);
 
-        verifyException(new BindingFactory(), InvalidExchangeAnnotationException.class).getParameterBinding(parameter);
+        new BindingFactory().getParameterBinding(parameter);
     }
 
     @Test

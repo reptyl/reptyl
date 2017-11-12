@@ -12,12 +12,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.googlecode.catchexception.CatchException.caughtException;
-import static com.googlecode.catchexception.CatchException.verifyException;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -62,7 +58,7 @@ public class MethodInvokerHandlerTest {
         verify(exchange, times(1)).setStatusCode(202);
     }
 
-    @Test
+    @Test(expected = TestException.class)
     public void methodExceptionsShouldBeUnpacked() throws Exception {
 
         when(exchange.getResponseSender()).thenReturn(sender);
@@ -70,10 +66,10 @@ public class MethodInvokerHandlerTest {
 
         MethodInvokerHandler handler = new MethodInvokerHandler(new Object(), method, emptyList());
 
-        verifyException(handler, TestException.class).handleRequest(exchange);
+        handler.handleRequest(exchange);
     }
 
-    @Test
+    @Test(expected = MethodInvocationException.class)
     public void otherThrowablesShouldBeWrapped() throws Exception {
 
         when(exchange.getResponseSender()).thenReturn(sender);
@@ -81,8 +77,7 @@ public class MethodInvokerHandlerTest {
 
         MethodInvokerHandler handler = new MethodInvokerHandler(new Object(), method, emptyList());
 
-        verifyException(handler, MethodInvocationException.class).handleRequest(exchange);
-        assertThat("the original Throwable should be wrapped as the cause of the thrown exception", caughtException().getCause(), instanceOf(Error.class));
+        handler.handleRequest(exchange);
     }
 
     private static class TestException extends RuntimeException {

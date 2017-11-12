@@ -13,32 +13,31 @@ import javax.ws.rs.QueryParam;
 import org.junit.Test;
 
 import static io.reptyl.test.unit.ReflectionTestUtils.getParameter;
-import static com.googlecode.catchexception.CatchException.verifyException;
 
 public class BindingFactoryTest {
 
-    @Test
+    @Test(expected = MultipleBindingOnTheSameParameterException.class)
     public void multipleJaxRsAnnotationsNotAllowed() {
 
         Parameter parameter = getParameter(Controller.class, "method1", String.class);
 
-        verifyException(new BindingFactory(), MultipleBindingOnTheSameParameterException.class).getParameterBinding(parameter);
+        new BindingFactory().getParameterBinding(parameter);
     }
 
-    @Test
+    @Test(expected = UnsupportedBindingAnnotationException.class)
     public void disallowUnsupportedBindingAnnotations() {
 
         Parameter parameter = getParameter(Controller.class, "method2", String.class);
 
-        verifyException(new BindingFactory(), UnsupportedBindingAnnotationException.class).getParameterBinding(parameter);
+        new BindingFactory().getParameterBinding(parameter);
     }
 
-    @Test
+    @Test(expected = UnboundParameterException.class)
     public void disallowNonAnnotatedParameters() {
 
         Parameter parameter = getParameter(Controller.class, "method5", String.class);
 
-        verifyException(new BindingFactory(), UnboundParameterException.class).getParameterBinding(parameter);
+        new BindingFactory().getParameterBinding(parameter);
     }
 
     @SuppressWarnings("unused")   // because these methods are access through reflection only

@@ -11,8 +11,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.googlecode.catchexception.CatchException.verifyException;
-
 @RunWith(MockitoJUnitRunner.class)
 public class RoutingHandlerFactoryTest {
 
@@ -27,16 +25,16 @@ public class RoutingHandlerFactoryTest {
         routingHandlerFactory = new RoutingHandlerFactory(routeFactory);
     }
 
-    @Test
+    @Test(expected = NonSingletonControllerException.class)
     public void nonSingletonClassesShouldBeRejected() {
 
-        verifyException(routingHandlerFactory, NonSingletonControllerException.class).fromClass(RoutingHandlerFactoryTest.class);
+        routingHandlerFactory.fromClass(RoutingHandlerFactoryTest.class);
     }
 
-    @Test
+    @Test(expected = EmptyControllerException.class)
     public void emptyControllerClassesShouldBeIgnored() {
 
-        verifyException(routingHandlerFactory, EmptyControllerException.class).fromClass(Controller.class);
+        routingHandlerFactory.fromClass(Controller.class);
     }
 
     @Singleton

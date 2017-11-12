@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.googlecode.catchexception.CatchException.verifyException;
 import static io.reptyl.test.unit.ReflectionTestUtils.getParameter;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.equalTo;
@@ -45,12 +44,12 @@ public class PathParamBindingTest {
         assertThat("the bound parameter should return the given value", binding.bindTo(exchange).get(), equalTo("TEST-VALUE"));
     }
 
-    @Test
+    @Test(expected = EmptyPathParamAnnotationException.class)
     public void disallowEmptyAnnotation() {
 
         Parameter parameter = getParameter(Controller.class, "method2", String.class);
 
-        verifyException(new BindingFactory(), EmptyPathParamAnnotationException.class).getParameterBinding(parameter);
+        new BindingFactory().getParameterBinding(parameter);
     }
 
     @Test

@@ -27,7 +27,6 @@ import org.mockito.stubbing.OngoingStubbing;
 
 import static io.reptyl.test.unit.HandlerTestUtils.getFirstTemplateString;
 import static io.reptyl.test.unit.ReflectionTestUtils.getField;
-import static com.googlecode.catchexception.CatchException.verifyException;
 import static java.lang.reflect.Modifier.PRIVATE;
 import static java.lang.reflect.Modifier.PUBLIC;
 import static org.hamcrest.Matchers.empty;
@@ -82,21 +81,21 @@ public class RouteFactoryTest {
         postAnnotationClass.thenReturn(POST.class);
     }
 
-    @Test
+    @Test(expected = NonPublicControllerException.class)
     public void nonPublicMethodShouldBeRejected() {
 
         when(method.getModifiers()).thenReturn(PRIVATE);
 
-        verifyException(routeFactory, NonPublicControllerException.class).getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(method, null);
     }
 
-    @Test
+    @Test(expected = NonVoidReturningControllerException.class)
     public void nonVoidReturningMethodsShouldBeRejected() {
 
         OngoingStubbing<Class<?>> returnType = when(method.getReturnType());
         returnType.thenReturn(Integer.TYPE);
 
-        verifyException(routeFactory, NonVoidReturningControllerException.class).getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(method, null);
     }
 
     @Test
@@ -155,20 +154,20 @@ public class RouteFactoryTest {
         assertThat("the template string should be equal to the one configured in the annotation", getFirstTemplateString(matches), equalTo("/test"));
     }
 
-    @Test
+    @Test(expected = EmptyControllerPathException.class)
     public void emptyControllerPathShouldBeRejected() {
 
         when(method.getAnnotation(Path.class)).thenReturn(pathAnnotation);
 
         when(pathAnnotation.value()).thenReturn("");
 
-        verifyException(routeFactory, EmptyControllerPathException.class).getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(method, null);
     }
 
-    @Test
+    @Test(expected = EmptyBasePathException.class)
     public void emptyBasePathShouldBeRejected() {
 
-        verifyException(routeFactory, EmptyBasePathException.class).getRoutingHandler(method, "");
+        routeFactory.getRoutingHandler(method, "");
     }
 
     @Test
@@ -241,13 +240,13 @@ public class RouteFactoryTest {
         assertThat("the template string should be the default", getFirstTemplateString(matches), equalTo("/"));
     }
 
-    @Test
+    @Test(expected = MalformedControllerPathException.class)
     public void malformedControllerPathShouldBeRejected() {
 
         when(method.getAnnotation(Path.class)).thenReturn(pathAnnotation);
 
         when(pathAnnotation.value()).thenReturn("test");   // ht apath does not start with a slash
 
-        verifyException(routeFactory, MalformedControllerPathException.class).getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(method, null);
     }
 }

@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.googlecode.catchexception.CatchException.verifyException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
@@ -50,12 +49,12 @@ public class QueryParamBindingTest {
         assertThat("the bound parameter should return the given value", binding.bindTo(exchange).get(), equalTo("TEST-VALUE"));
     }
 
-    @Test
+    @Test(expected = EmptyQueryParamAnnotationException.class)
     public void disallowEmptyAnnotation() {
 
         Parameter parameter = ReflectionTestUtils.getParameter(Controller.class, "method2", String.class);
 
-        verifyException(new BindingFactory(), EmptyQueryParamAnnotationException.class).getParameterBinding(parameter);
+        new BindingFactory().getParameterBinding(parameter);
     }
 
     @Test
