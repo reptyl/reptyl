@@ -32,17 +32,11 @@ public class ReptylServer {
     public void start() {
         LOGGER.info("starting reptyl server");
         undertow.start();
-
-        XnioWorker worker = undertow.getWorker();
-        Xnio xnio = undertow.getXnio();
     }
 
     public void stop() {
         LOGGER.info("stopping reptyl server");
         undertow.stop();
-
-        XnioWorker worker = undertow.getWorker();
-        Xnio xnio = undertow.getXnio();
     }
 
     public ServerConfiguration getServerConfiguration() {
