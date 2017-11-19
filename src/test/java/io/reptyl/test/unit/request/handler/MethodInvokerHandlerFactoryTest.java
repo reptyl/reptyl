@@ -1,10 +1,10 @@
 package io.reptyl.test.unit.request.handler;
 
+import io.reptyl.Controller;
 import io.reptyl.error.DefaultExceptionHandler;
 import io.reptyl.request.binding.ExchangeBinding;
 import io.reptyl.request.handler.MethodInvokerHandler;
 import io.reptyl.request.handler.MethodInvokerHandlerFactory;
-import com.google.inject.Injector;
 import java.lang.reflect.Method;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,18 +19,18 @@ import static org.junit.Assert.assertThat;
 public class MethodInvokerHandlerFactoryTest {
 
     @Mock
-    private Injector injector;
-
-    @Mock
     private DefaultExceptionHandler defaultExceptionHandler;
 
     @Mock
     private Method method;
 
+    @Mock
+    private Controller controller;
+
     @Test
     public void createMethodInvokerHandler() {
 
-        MethodInvokerHandler handler = new MethodInvokerHandlerFactory(injector, defaultExceptionHandler).getHandler(MethodInvokerHandlerFactoryTest.class, method, singletonList(new ExchangeBinding()));
+        MethodInvokerHandler handler = new MethodInvokerHandlerFactory(defaultExceptionHandler).getHandler(controller, method, singletonList(new ExchangeBinding()));
 
         assertThat("a MethodInvokerHandler shold be created", handler, notNullValue());
     }

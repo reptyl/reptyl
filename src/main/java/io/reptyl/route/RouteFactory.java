@@ -1,5 +1,6 @@
 package io.reptyl.route;
 
+import io.reptyl.Controller;
 import io.reptyl.request.binding.Binding;
 import io.reptyl.request.binding.BindingFactory;
 import io.reptyl.request.handler.MethodInvokerHandlerFactory;
@@ -41,7 +42,7 @@ public class RouteFactory {
         this.methodInvokerHandlerFactory = methodInvokerHandlerFactory;
     }
 
-    public RoutingHandler getRoutingHandler(Method method, final @Nullable String basePath) {
+    public RoutingHandler getRoutingHandler(Controller controller, Method method, final @Nullable String basePath) {
 
         requireNonNull(method, "method should not be null");
 
@@ -113,7 +114,7 @@ public class RouteFactory {
                 .collect(toList());
 
         // create the request handler
-        HttpHandler httpHandler = methodInvokerHandlerFactory.getHandler(method.getDeclaringClass(), method, bindings);
+        HttpHandler httpHandler = methodInvokerHandlerFactory.getHandler(controller, method, bindings);
 
         RoutingHandler routingHandler = new RoutingHandler();
 

@@ -15,7 +15,7 @@ public class ServerConfiguration {
 
     private String workerName;
 
-    private Collection<Class<?>> controllers = new ArrayList<>();
+    private Collection<Controller> controllers = new ArrayList<>();
 
     public Integer getPort() {
         return port;
@@ -41,15 +41,15 @@ public class ServerConfiguration {
         this.workerName = workerName;
     }
 
-    public void addController(Class<?> clazz) {
-        controllers.add(clazz);
+    public void addController(Controller controller) {
+        this.controllers.add(controller);
     }
 
-    public void addControllers(Collection<Class<?>> clazz) {
-        controllers.addAll(clazz);
+    public void addControllers(Collection<Controller> controllers) {
+        this.controllers.addAll(controllers);
     }
 
-    public Collection<Class<?>> getControllers() {
+    public Collection<Controller> getControllers() {
         return unmodifiableCollection(controllers);
     }
 }

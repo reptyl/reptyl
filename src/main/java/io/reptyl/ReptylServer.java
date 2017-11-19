@@ -1,15 +1,18 @@
 package io.reptyl;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.util.Modules;
+import io.reptyl.error.DefaultExceptionHandler;
+import io.reptyl.request.binding.BindingFactory;
+import io.reptyl.request.handler.MethodInvokerHandlerFactory;
+import io.reptyl.route.RouteFactory;
+import io.reptyl.route.RoutingHandlerFactory;
 import io.undertow.Undertow;
-import java.util.ArrayList;
-import java.util.Collection;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.RoutingHandler;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.xnio.Options.WORKER_NAME;
 
 public class ReptylServer {
 
@@ -51,8 +54,9 @@ public class ReptylServer {
         public static final String DEFAULT_HOST = "localhost";
         public static final String DEFAULT_WORKER_NAME = "Reptyl";
 
-        private final Collection<Module> modules = new ArrayList<>();
         private final ServerConfiguration serverConfiguration = new ServerConfiguration();
+        private HttpHandler httpHandler;
+        private Undertow undertow;
 
         public Builder port(Integer port) {
             this.serverConfiguration.setPort(port);
@@ -69,8 +73,18 @@ public class ReptylServer {
             return this;
         }
 
-        public Builder withController(Class<?> clazz) {
-            this.serverConfiguration.addController(clazz);
+        public Builder withController(Controller controller) {
+            this.serverConfiguration.addController(controller);
+            return this;
+        }
+
+        public Builder withHttpHandler(HttpHandler httpHandler) {
+            this.httpHandler = httpHandler;
+            return this;
+        }
+
+        public Builder withUndertow(Undertow undertow) {
+            this.undertow = undertow;
             return this;
         }
 
@@ -90,21 +104,40 @@ public class ReptylServer {
                 serverConfiguration.setWorkerName(DEFAULT_WORKER_NAME);
             }
 
+            if (httpHandler == null) {
 
-            Injector injector = Guice.createInjector(Modules.override(new ReptylModule()).with(modules));
+                DefaultExceptionHandler defaultExceptionHandler = new DefaultExceptionHandler();
 
-            ServerConfiguration serverConfiguration = injector.getInstance(ServerConfiguration.class);
-            serverConfiguration.setHost(this.serverConfiguration.getHost());
-            serverConfiguration.setPort(this.serverConfiguration.getPort());
-            serverConfiguration.setWorkerName(this.serverConfiguration.getWorkerName());
-            serverConfiguration.addControllers(this.serverConfiguration.getControllers());
+                BindingFactory bindingFactory = new BindingFactory();
+                MethodInvokerHandlerFactory methodInvokerHandlerFactory = new MethodInvokerHandlerFactory(defaultExceptionHandler);
 
-            return injector.getInstance(ReptylServer.class);
-        }
+                RouteFactory routeFactory = new RouteFactory(bindingFactory, methodInvokerHandlerFactory);
+                RoutingHandlerFactory routingHandlerFactory = new RoutingHandlerFactory(routeFactory);
 
-        public Builder withModule(Module module) {
-            modules.add(module);
-            return this;
+                RoutingHandler httpHandler = new RoutingHandler();
+
+                serverConfiguration
+                        .getControllers()
+                        .stream()
+                        .map(routingHandlerFactory::fromController)
+                        .forEach(httpHandler::addAll);
+
+                this.httpHandler = httpHandler;
+            }
+
+            if (undertow == null) {
+
+                undertow = Undertow
+                        .builder()
+                        .addHttpListener(serverConfiguration.getPort(), serverConfiguration.getHost())
+                        .setWorkerOption(WORKER_NAME, serverConfiguration.getWorkerName())
+                        .setHandler(httpHandler)
+                        .setIoThreads(1)
+                        .setWorkerThreads(1)
+                        .build();
+            }
+
+            return new ReptylServer(undertow, serverConfiguration);
         }
     }
 }

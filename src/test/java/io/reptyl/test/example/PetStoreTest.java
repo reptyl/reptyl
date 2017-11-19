@@ -23,7 +23,7 @@ public class PetStoreTest {
         RestAssured.port = 8081;
         RestAssured.baseURI = "http://localhost";
 
-        petStore = new PetStore();
+        petStore = PetStore.build();
         petStore.start();
     }
 

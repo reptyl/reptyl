@@ -2,6 +2,7 @@ package io.reptyl.example.petstore.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reptyl.Controller;
 import io.reptyl.example.petstore.model.Pet;
 import io.undertow.server.HttpServerExchange;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Singleton
 @Path("/pets")
-public class PetController {
+public class PetController implements Controller {
 
     public static final Map<String, Pet> PETS;
 

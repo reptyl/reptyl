@@ -1,33 +1,34 @@
 package io.reptyl.example.petstore;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
+import com.google.inject.Guice;
 import io.reptyl.ReptylServer;
 import io.reptyl.example.petstore.controller.PetController;
 import io.reptyl.example.petstore.controller.PetStoreController;
 import io.reptyl.example.petstore.controller.StoreController;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
-
+@Singleton
 public class PetStore {
 
     private final ReptylServer reptylServer;
 
-    public PetStore() {
+    @Inject
+    public PetStore(
+            final PetController petController,
+            final StoreController storeController,
+            final PetStoreController petStoreController) {
+
         reptylServer = ReptylServer.builder()
                 .port(8081)
-                .withController(PetController.class)
-                .withController(StoreController.class)
-                .withController(PetStoreController.class)
-                .withModule(new PetStoreModule())
+                .withController(petController)
+                .withController(storeController)
+                .withController(petStoreController)
                 .build();
     }
 
-    public static void main(String... args) {
-
-        new PetStore().start();
+    public static PetStore build() {
+        return Guice.createInjector(new PetStoreModule()).getInstance(PetStore.class);
     }
 
     public void start() {
@@ -38,20 +39,7 @@ public class PetStore {
         reptylServer.stop();
     }
 
-    public static class PetStoreModule extends AbstractModule {
-
-        @Provides
-        @Singleton
-        public ObjectMapper objectMapper() {
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.enable(INDENT_OUTPUT);
-
-            return objectMapper;
-        }
-        @Override
-        protected void configure() {
-
-        }
+    public static void main(String... args) {
+        PetStore.build().start();
     }
 }

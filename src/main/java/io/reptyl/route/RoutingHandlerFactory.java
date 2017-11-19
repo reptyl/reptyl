@@ -1,11 +1,11 @@
 package io.reptyl.route;
 
+import io.reptyl.Controller;
 import io.reptyl.route.exception.EmptyControllerException;
 import io.reptyl.route.exception.NonSingletonControllerException;
 import io.undertow.server.RoutingHandler;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -31,7 +31,10 @@ public class RoutingHandlerFactory {
         this.routeFactory = routeFactory;
     }
 
-    public RoutingHandler fromClass(Class<?> clazz) {
+    public RoutingHandler fromController(Controller controller) {
+
+        @SuppressWarnings("unchecked")
+        Class<Controller> clazz = (Class<Controller>) controller.getClass();
 
         Singleton singletonAnnotation = clazz.getDeclaredAnnotation(Singleton.class);
 
@@ -56,14 +59,10 @@ public class RoutingHandlerFactory {
 
             LOGGER.debug("found method {}", method);
 
-            routingHandler.addAll(routeFactory.getRoutingHandler(method, basePath));
+            routingHandler.addAll(routeFactory.getRoutingHandler(controller, method, basePath));
         });
 
         return routingHandler;
-    }
-
-    private static Stream<Method> methodsOf(Class<?> clazz) {
-        return Arrays.stream(clazz.getDeclaredMethods());
     }
 
     private static List<Method> methodsOfAsList(Class<?> clazz) {

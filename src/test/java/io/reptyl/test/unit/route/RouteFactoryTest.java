@@ -1,5 +1,6 @@
 package io.reptyl.test.unit.route;
 
+import io.reptyl.Controller;
 import io.reptyl.request.binding.BindingFactory;
 import io.reptyl.request.handler.MethodInvokerHandlerFactory;
 import io.reptyl.route.RouteFactory;
@@ -57,6 +58,9 @@ public class RouteFactoryTest {
     @Mock
     private Path pathAnnotation;
 
+    @Mock
+    private Controller controller;
+
     private RouteFactory routeFactory;
 
     @Before
@@ -86,7 +90,7 @@ public class RouteFactoryTest {
 
         when(method.getModifiers()).thenReturn(PRIVATE);
 
-        routeFactory.getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(controller, method, null);
     }
 
     @Test(expected = NonVoidReturningControllerException.class)
@@ -95,7 +99,7 @@ public class RouteFactoryTest {
         OngoingStubbing<Class<?>> returnType = when(method.getReturnType());
         returnType.thenReturn(Integer.TYPE);
 
-        routeFactory.getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(controller, method, null);
     }
 
     @Test
@@ -103,7 +107,7 @@ public class RouteFactoryTest {
 
         when(method.getAnnotations()).thenReturn(new Annotation[0]);
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, null);
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, null);
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -116,7 +120,7 @@ public class RouteFactoryTest {
 
         when(method.getAnnotations()).thenReturn(new Annotation[] { getAnnotation });
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, null);
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, null);
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -130,7 +134,7 @@ public class RouteFactoryTest {
 
         when(method.getAnnotations()).thenReturn(new Annotation[] { getAnnotation, postAnnotation });
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, null);
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, null);
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -146,7 +150,7 @@ public class RouteFactoryTest {
 
         when(pathAnnotation.value()).thenReturn("/test");
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, null);
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, null);
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -161,13 +165,13 @@ public class RouteFactoryTest {
 
         when(pathAnnotation.value()).thenReturn("");
 
-        routeFactory.getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(controller, method, null);
     }
 
     @Test(expected = EmptyBasePathException.class)
     public void emptyBasePathShouldBeRejected() {
 
-        routeFactory.getRoutingHandler(method, "");
+        routeFactory.getRoutingHandler(controller, method, "");
     }
 
     @Test
@@ -178,7 +182,7 @@ public class RouteFactoryTest {
 
         when(pathAnnotation.value()).thenReturn("/");
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, null);
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, null);
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -194,7 +198,7 @@ public class RouteFactoryTest {
 
         when(pathAnnotation.value()).thenReturn("/test");
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, "/base");
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, "/base");
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -213,7 +217,7 @@ public class RouteFactoryTest {
 
         when(pathAnnotation.value()).thenReturn("/test");
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, "/");
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, "/");
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -232,7 +236,7 @@ public class RouteFactoryTest {
 
         when(pathAnnotation.value()).thenReturn("/");
 
-        RoutingHandler routingHandler = routeFactory.getRoutingHandler(method, "/");
+        RoutingHandler routingHandler = routeFactory.getRoutingHandler(controller, method, "/");
 
         Map<HttpString, PathTemplateMatcher<?>> matches = getField(routingHandler, "matches");
 
@@ -247,6 +251,6 @@ public class RouteFactoryTest {
 
         when(pathAnnotation.value()).thenReturn("test");   // ht apath does not start with a slash
 
-        routeFactory.getRoutingHandler(method, null);
+        routeFactory.getRoutingHandler(controller, method, null);
     }
 }

@@ -1,5 +1,6 @@
 package io.reptyl.test.unit.route;
 
+import io.reptyl.Controller;
 import io.reptyl.route.RouteFactory;
 import io.reptyl.route.RoutingHandlerFactory;
 import io.reptyl.route.exception.EmptyControllerException;
@@ -28,17 +29,21 @@ public class RoutingHandlerFactoryTest {
     @Test(expected = NonSingletonControllerException.class)
     public void nonSingletonClassesShouldBeRejected() {
 
-        routingHandlerFactory.fromClass(RoutingHandlerFactoryTest.class);
+        routingHandlerFactory.fromController(new NonSingletonController());
     }
 
     @Test(expected = EmptyControllerException.class)
     public void emptyControllerClassesShouldBeIgnored() {
 
-        routingHandlerFactory.fromClass(Controller.class);
+        routingHandlerFactory.fromController(new SingletonController());
     }
 
     @Singleton
-    private static class Controller {
+    private static class SingletonController implements Controller {
+
+    }
+
+    private static class NonSingletonController implements Controller {
 
     }
 }

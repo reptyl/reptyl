@@ -1,12 +1,8 @@
 package io.reptyl.test.integration;
 
 import io.reptyl.ReptylServer;
-import io.reptyl.test.integration.package3.Controller1;
+import io.reptyl.test.integration.package3.Controller4;
 import io.restassured.RestAssured;
-import io.undertow.server.HttpServerExchange;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -94,7 +90,7 @@ public class ReptylServerIT {
         ReptylServer reptylServer1 = ReptylServer
                 .builder()
                 .port(8080)
-                .withController(Controller1.class)
+                .withController(new Controller4())
                 .build();
 
         reptylServer1.start();
@@ -112,42 +108,5 @@ public class ReptylServerIT {
         // @formatter:on
 
         reptylServer1.stop();
-    }
-
-    @Test
-    public void manuallyRegisterController() {
-
-        ReptylServer reptylServer1 = ReptylServer
-                .builder()
-                .port(8080)
-                .withController(Controller.class)
-                .build();
-
-        reptylServer1.start();
-
-        // @formatter:off
-
-        given()
-            .port(8080)
-        .when()
-            .get("/test-manually-registered")
-        .then()
-            .assertThat()
-                .statusCode(INSUFFICIENT_STORAGE);
-
-        // @formatter:on
-
-        reptylServer1.stop();
-    }
-
-    @Singleton
-    public static class Controller {
-
-        @GET
-        @Path("/test-manually-registered")
-        public void test(HttpServerExchange exchange) {
-            exchange.setStatusCode(INSUFFICIENT_STORAGE);
-            exchange.getResponseSender().send("");
-        }
     }
 }
