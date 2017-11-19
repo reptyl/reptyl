@@ -1,5 +1,6 @@
 package io.reptyl.request.handler;
 
+import io.reptyl.error.DefaultExceptionHandler;
 import io.reptyl.request.binding.Binding;
 import com.google.inject.Injector;
 import java.lang.reflect.Method;
@@ -11,10 +12,12 @@ import javax.inject.Singleton;
 public class MethodInvokerHandlerFactory {
 
     private final Injector injector;
+    private final DefaultExceptionHandler defaultExceptionHandler;
 
     @Inject
-    public MethodInvokerHandlerFactory(final Injector injector) {
+    public MethodInvokerHandlerFactory(final Injector injector, final DefaultExceptionHandler defaultExceptionHandler) {
         this.injector = injector;
+        this.defaultExceptionHandler = defaultExceptionHandler;
     }
 
     public MethodInvokerHandler getHandler(
@@ -22,6 +25,6 @@ public class MethodInvokerHandlerFactory {
             final Method method,
             final List<Binding<?>> bindings) {
 
-        return new MethodInvokerHandler(injector.getInstance(controllerClass), method, bindings);
+        return new MethodInvokerHandler(injector.getInstance(controllerClass), method, bindings, defaultExceptionHandler);
     }
 }

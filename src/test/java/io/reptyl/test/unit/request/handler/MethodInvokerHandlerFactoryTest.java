@@ -1,5 +1,6 @@
 package io.reptyl.test.unit.request.handler;
 
+import io.reptyl.error.DefaultExceptionHandler;
 import io.reptyl.request.binding.ExchangeBinding;
 import io.reptyl.request.handler.MethodInvokerHandler;
 import io.reptyl.request.handler.MethodInvokerHandlerFactory;
@@ -21,12 +22,15 @@ public class MethodInvokerHandlerFactoryTest {
     private Injector injector;
 
     @Mock
+    private DefaultExceptionHandler defaultExceptionHandler;
+
+    @Mock
     private Method method;
 
     @Test
     public void createMethodInvokerHandler() {
 
-        MethodInvokerHandler handler = new MethodInvokerHandlerFactory(injector).getHandler(MethodInvokerHandlerFactoryTest.class, method, singletonList(new ExchangeBinding()));
+        MethodInvokerHandler handler = new MethodInvokerHandlerFactory(injector, defaultExceptionHandler).getHandler(MethodInvokerHandlerFactoryTest.class, method, singletonList(new ExchangeBinding()));
 
         assertThat("a MethodInvokerHandler shold be created", handler, notNullValue());
     }
