@@ -1,6 +1,9 @@
-apply plugin: 'java'
-//apply plugin: 'maven'
-apply plugin: 'pmd'
+plugins {
+    id 'java'
+    id 'pmd'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
+}
 
 group = 'io.reptyl'
 version = '1.0-SNAPSHOT'
@@ -57,4 +60,11 @@ task example(type: JavaExec) {
 pmd {
     toolVersion = '5.8.1'
     ruleSetFiles = rootProject.files("/pmd.xml")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
 }
