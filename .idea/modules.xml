@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/reptyl.iml" filepath="$PROJECT_DIR$/reptyl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/reptyl_example.iml" filepath="$PROJECT_DIR$/.idea/modules/reptyl_example.iml" group="reptyl" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/reptyl_main.iml" filepath="$PROJECT_DIR$/.idea/modules/reptyl_main.iml" group="reptyl" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/reptyl_test.iml" filepath="$PROJECT_DIR$/.idea/modules/reptyl_test.iml" group="reptyl" />
+    </modules>
+  </component>
+</project>
